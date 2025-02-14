@@ -5,6 +5,9 @@ from sqlalchemy.orm import sessionmaker
 
 from back.settings import DEBUG_MODE, DB_PATH
 from back.revision.controller import RevisionController
+from back.order.controller import OrderController
+from back.material.controller import MaterialController 
+from back.aircraft.controller import AircraftController
 from back.utils.utils import update_listener
 
 
@@ -14,6 +17,9 @@ db = SessionLocal()
 
 controllers = {
     "revision": RevisionController(db),
+    "order": OrderController(db),
+    "aircraft": AircraftController(db),
+    "material": MaterialController(db)
 }
 
 url = "http://localhost:5173" if DEBUG_MODE else "front/dist/index.html"
