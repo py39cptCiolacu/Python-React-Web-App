@@ -30,7 +30,7 @@ controllers = {
 }
 #==========================================================
 
-@app.route('/upload/<tab_name>', methods=['POST'])
+@app.route("/upload/<tab_name>", methods=['POST'])
 def upload_file(tab_name):
 
     
@@ -47,6 +47,18 @@ def upload_file(tab_name):
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
+    
+@app.route("/get_aircraft_info", methods=["GET"])
+def get_aircraft_info():
+    
+    serial_number = request.args.get('serial_number')
+    return aircraft_controller.get_aircraft_by_serial_number(serial_number)
+
+@app.route("/get_material_info", methods=["GET"])
+def get_material_info():
+
+    part_number = request.args.get('material_part_number')
+    return material_controller.get_material_by_part_number(part_number) 
 
 def _handle_upload(tab_name: str, file) -> dict:
 

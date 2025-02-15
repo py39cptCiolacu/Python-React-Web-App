@@ -1,14 +1,21 @@
 from typing import List
 import pandas as pd
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, NoResultFound
 from back.models import Material
 
 def get_all_materials(db: Session) -> List[Material]:
     materials = db.query(Material).all()
-    return materials 
+    return materials
 
-def create_new_materials(db: Session, file_path: str):
+def get_material_by_part_number(db: Session, part_number: str) -> Material:
+    material = db.query(Material).filter(Material.part_number == part_number).first()
+    if material:
+        return material
+    else:
+        raise NoResultFound
+
+def create_new_materials(db: Session, file_path: str) -> dict:
     print(f"Processing file: {file_path}")
     
     try:

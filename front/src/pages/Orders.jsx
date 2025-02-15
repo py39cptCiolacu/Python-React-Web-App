@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "../styles/TableView.css";
-import SearchBar from "./SearchBar"; // Importăm SearchBar
+import SearchBar from "./SearchBar"; 
+import AircraftCard from "./AircraftCard";
+import MaterialCard from "./MaterialCard"; 
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedAircraft, setSelectedAircraft] = useState(null); 
+  const [selectedMaterial, setSelectedMaterial] = useState(null); 
   const ordersPerPage = 10;
 
   useEffect(() => {
@@ -13,7 +17,7 @@ const Orders = () => {
       .order_get_all_orders()
       .then((response) => {
         setOrders(response);
-        setFilteredOrders(response); // Set initial filtered orders
+        setFilteredOrders(response); 
       })
       .catch((error) => console.error("Error fetching orders data:", error));
   }, []);
@@ -46,7 +50,22 @@ const Orders = () => {
     }
 
     setFilteredOrders(filtered);
-    setCurrentPage(1); // Reset page to 1 after filtering
+    setCurrentPage(1);
+  };
+
+  const handleAircraftClick = (aircraft) => {
+    setSelectedAircraft(aircraft); 
+    setSelectedMaterial(null); 
+  };
+
+  const handleMaterialClick = (materialPN) => {
+    setSelectedMaterial(materialPN); 
+    setSelectedAircraft(null); 
+  };
+
+  const handleCloseCard = () => {
+    setSelectedAircraft(null); // Close the aircraft card
+    setSelectedMaterial(null); // Close the material card
   };
 
   const indexOfLastOrder = currentPage * ordersPerPage;
@@ -80,8 +99,8 @@ const Orders = () => {
             <tbody>
               {currentOrders.map((item, index) => (
                 <tr key={index}>
-                  <td>{item.aircraft_serial_number}</td>
-                  <td>{item.material_part_number}</td>
+                  <td onClick={() => handleAircraftClick(item)}>{item.aircraft_serial_number}</td>
+                  <td onClick={() => handleMaterialClick(item.material_part_number)}>{item.material_part_number}</td>
                   <td>{item.arrival_date}</td>
                   <td>{item.status}</td>
                 </tr>
@@ -108,6 +127,14 @@ const Orders = () => {
             </button>
           </div>
         </>
+      )}
+
+      {selectedAircraft && (
+        <AircraftCard aircraft={selectedAircraft} onClose={handleCloseCard} />
+      )}
+
+      {selectedMaterial && (
+        <MaterialCard materialPN={selectedMaterial} onClose={handleCloseCard} />
       )}
     </div>
   );

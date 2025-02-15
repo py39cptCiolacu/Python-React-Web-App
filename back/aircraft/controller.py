@@ -11,8 +11,13 @@ class AircraftController:
     @json_response(List[AircraftSchema])
     def get_all_aircrafts(self):
         aircrafts = repository.get_all_aircrafs(self.db)
-        
+
         return aircrafts
+    
+    @json_response(AircraftSchema)
+    def get_aircraft_by_serial_number(self, serial_number: str):
+        aircraft = repository.get_aircraft_by_serial_number(self.db, serial_number)
+        return aircraft
 
     def add_aircrafts_from_file(self, file):
         try:

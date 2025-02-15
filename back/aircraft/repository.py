@@ -1,12 +1,20 @@
 from typing import List
 import pandas as pd
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, NoResultFound
 from back.models import Aircraft
 
 def get_all_aircrafs(db: Session) -> List[Aircraft]:
     aircrafts = db.query(Aircraft).all()
     return aircrafts
+
+def get_aircraft_by_serial_number(db: Session, serial_number: str) -> Aircraft:
+
+    aircraft = db.query(Aircraft).filter(Aircraft.serial_number == serial_number).first()
+    if aircraft:
+        return aircraft
+    else:
+        raise NoResultFound
 
 def create_new_aircrafts(db: Session, file_path: str):
     print(f"Processing file: {file_path}")
