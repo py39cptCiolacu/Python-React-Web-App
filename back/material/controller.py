@@ -14,10 +14,14 @@ class MaterialController:
         
         return materials
 
-
     def add_materials_from_file(self, data: dict):
-        # if data["name"] == "error":
-        #     raise Exception("error")
-        repository.create_new_materials(self.db, data["file"])
+        if "file" not in data:
+            return {"success": False, "error": "Missing file!"}
+    
+        try:
+            repository.create_new_materials(self.db, data["file"])
+            return {"success": True, "message": "Materials uploaded successfully!"}
+        except Exception as e:
+            return {"success": False, "error": f"Error during file processing: {str(e)}"}
 
 

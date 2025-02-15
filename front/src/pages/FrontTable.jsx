@@ -1,34 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Orders from "./Orders";
 import Materials from "./Materials";
 import Aircrafts from "./Aircrafts";
 import Upload from "./Upload";
-import "../styles/FrontTable.css"
+import "../styles/FrontTable.css";
 
 export default function FrontTable() {
-  
-  const [activeTab, setActiveTab] = useState("orders");
+  const [activeTab, setActiveTab] = useState(localStorage.getItem("activeTab") || "orders");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Salvăm tab-ul activ în localStorage
+  useEffect(() => {
+    localStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
+
+  // Funcție care forțează re-randarea tabelului după upload
+  const handleUploadSuccess = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
 
   return (
     <div>
-      {/*Header buttons*/}
+      {/* Header buttons */}
       <div className="header">
         <button onClick={() => setActiveTab("orders")}>ORDERS</button>
         <button onClick={() => setActiveTab("materials")}>MATERIALS</button>
         <button onClick={() => setActiveTab("aircrafts")}>AIRCRAFTS</button>
       </div>
 
-      {/*Table*/}
+      {/* Table */}
       <div className="content">
-        {activeTab === "orders" && <Orders />}
-        {activeTab === "materials" && <Materials />}
-        {activeTab === "aircrafts" && <Aircrafts />}
-      </div> 
+        {activeTab === "orders" && <Orders key={refreshKey} />}
+        {activeTab === "materials" && <Materials key={refreshKey} />}
+        {activeTab === "aircrafts" && <Aircrafts key={refreshKey} />}
+      </div>
 
-      {/*Upload Buttons*/} 
-      <Upload activeTab={activeTab}/>
+      {/* Upload Buttons */}
+      <Upload activeTab={activeTab} onUploadSuccess={handleUploadSuccess} />
     </div>
-
   );
 }
-

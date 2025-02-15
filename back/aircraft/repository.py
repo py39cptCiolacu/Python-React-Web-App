@@ -9,39 +9,44 @@ def get_all_aircrafs(db: Session) -> List[Aircraft]:
     return aircrafts
 
 def create_new_aircrafts(db: Session, file_path: str):
-    print(file_path)
-    aircrafts = pd.read_excel(file_path)
+    print(f"Processing file: {file_path}")
+    
+    try:
+        aircrafts = pd.read_excel(file_path)
+    except Exception as e:
+        raise Exception(f"Failed to read file: {str(e)}")
+    
     valid_new_aircrafts = []
+    skipped_aircrafts = []
 
     for index, row in aircrafts.iterrows():
         new_aircraft = Aircraft(
-            serial_number = row["Serial Number"],
-            model = row["Model"],
-            manufacturer = row["Manufacturer"],
-            capacity = row["Capacity"],
-            configuration = row["Configuration"]
+            serial_number=row["Serial Number"],
+            model=row["Model"],
+            manufacturer=row["Manufacturer"],
+            capacity=row["Capacity"],
+            configuration=row["Configuration"]
         )
 
         if _verify_aircraft_before_add(db, new_aircraft):
             valid_new_aircrafts.append(new_aircraft)
         else:
-            ### user error with all that failed
-            print(f"Aircraft {new_aircraft.serial_number} skipped due to validation error!")
+            skipped_aircrafts.append(f"Aircraft {new_aircraft.serial_number} skipped due to validation error!")
 
     if valid_new_aircrafts:
         try:
             db.add_all(valid_new_aircrafts)
             db.commit()
-            #user info
-        except IntegrityError:
+            return {"success": True, "message": f"{len(valid_new_aircrafts)} aircrafts added successfully!"}
+        except IntegrityError as e:
             db.rollback()
-            #error during databse commit
+            raise Exception(f"Database integrity error: {str(e)}")
         except Exception as e:
             db.rollback()
-            #unexpected error
+            raise Exception(f"Unexpected error during commit: {str(e)}")
     else:
-        #inform the user - no valid enteries
-        pass
+        raise Exception(f"No valid aircrafts to add. Skipped: {', '.join(skipped_aircrafts)}")
+
 
 def delete_aircraft():
     pass
@@ -51,9 +56,14 @@ def edit_aircraft():
 
 def _verify_aircraft_before_add(db: Session, aircraft: Aircraft) -> bool:
     
-    if (not aircraft.serial_number) or (not aircraft.capacity) or (not aircraft.configuration) or (not aircraft.manufacturer):
+    if not all([aircraft.serial_number, aircraft.capacity, aircraft.configuration, aircraft.manufacturer]):
         print("Missing information about aircraft!")
         return False
+    
+    if not all([aircraft.serial_number is not None, aircraft.capacity is not None, aircraft.configuration is not None, aircraft.manufacturer is not None]):
+        print("Missing information about aircraft!")
+        return False
+
 
     existing_aircraft = db.query(Aircraft).filter(Aircraft.serial_number == aircraft.serial_number).first()
     if existing_aircraft:

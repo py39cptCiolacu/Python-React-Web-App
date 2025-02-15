@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import "../styles/Upload.css";
 
-export default function Upload({ activeTab }) {
+export default function Upload({ activeTab, onUploadSuccess }) {
   const [filePath, setFilePath] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setFilePath(file); 
+      setFilePath(file);
     }
   };
 
@@ -17,36 +17,40 @@ export default function Upload({ activeTab }) {
       return;
     }
 
-    // ------------------------ MUST CHANGE------------
     try {
-      if (activeTab == "aircrafts"){
-        var formData = {"file": "C:\\Users\\dciol\\OneDrive\\Desktop\\aircraft.xlsx"};
-        const response = await window.pywebview.api.aircraft_add_aircrafts_from_file(formData); 
+      let response;
+      // const formData = new FormData();
+      // formData.append("file", filePath);
+
+      if (activeTab === "aircrafts") {
+        const formData = { file: "C:\\Users\\dciol\\OneDrive\\Desktop\\aircraft.xlsx" };
+        response = await window.pywebview.api.aircraft_add_aircrafts_from_file(formData);
+      } else if (activeTab === "orders") {
+        const formData = { file: "C:\\Users\\dciol\\OneDrive\\Desktop\\order.xlsx" };
+        response = await window.pywebview.api.order_add_orders_from_file(formData);
+      } else if (activeTab === "materials") {
+        const formData = { file: "C:\\Users\\dciol\\OneDrive\\Desktop\\material.xlsx" };
+        response = await window.pywebview.api.material_add_materials_from_file(formData);
       }
-      else if (activeTab == "orders"){
-        var formData = {"file": "C:\\Users\\dciol\\OneDrive\\Desktop\\order.xlsx"};
-        const response = await window.pywebview.api.order_add_orders_from_file(formData); 
+
+      if (response.success) {
+        console.log("File uploaded successfully:", response);
+        alert("File uploaded successfully!");
+        onUploadSuccess();
+      } else {
+        // Afișează mesajul exact de eroare din backend
+        console.error("Error uploading file:", response.error);
+        alert(`Error: ${response.error || "Unknown error"}`);
       }
-      else if (activeTab == "materials"){
-        var formData = {"file": "C:\\Users\\dciol\\OneDrive\\Desktop\\material.xlsx"};
-        const response = await window.pywebview.api.material_add_materials_from_file(formData); 
-      }
-    // ------------------------------------
-      console.log("File uploaded successfully:", response);
-      alert("File uploaded successfully!");
     } catch (error) {
       console.error("Error uploading file:", error);
-      alert("Error uploading file.");
+      alert(`Error uploading file: ${error.message || "Unknown error"}`);
     }
   };
 
   return (
     <div className="upload-container">
-      <input
-        type="file"
-        onChange={handleFileChange}
-        className="file-input"
-      />
+      <input type="file" onChange={handleFileChange} className="file-input" />
       <button className="upload-btn" onClick={handleUpload}>
         Upload {activeTab.toUpperCase()} File
       </button>
