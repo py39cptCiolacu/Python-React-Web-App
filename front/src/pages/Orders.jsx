@@ -41,7 +41,7 @@ const Orders = () => {
               {currentOrders.map((item, index) => (
                 <tr key={index}>
                   <td>{item.aircraft_serial_number}</td>
-                  <td>{item.material_pn}</td>
+                  <td>{item.material_part_number}</td>
                   <td>{item.arrival_date}</td>
                   <td>{item.status}</td>
                 </tr>

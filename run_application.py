@@ -21,7 +21,7 @@ controllers = {
 }
 
 url = "http://localhost:5173" if DEBUG_MODE else "front/dist/index.html"
-window = webview.create_window("Demo application", url=url, width=1200)
+window = webview.create_window("Demo application", url=url, width=1600, height=900)
 for controller in controllers.values():
     controller.window = window
 
