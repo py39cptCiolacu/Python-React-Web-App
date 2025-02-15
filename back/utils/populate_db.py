@@ -5,24 +5,12 @@ sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
 import sqlalchemy
 from back.settings import DB_PATH
-from back.revision.model import Revision
-from back.order.model import Order
-from back.material.model import Material 
-from back.aircraft.model import Aircraft 
+from back.models import Aircraft, Material, Order 
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-def populate_db(session):
-    revision = create_revision()
-    session.add(revision)
-
-def create_revision():
-    revision = Revision(name="test-revision")
-    return revision
-
 tables = [
-    Revision.__table__,
     Order.__table__,
     Material.__table__,
     Aircraft.__table__
@@ -42,6 +30,4 @@ session = Session()
 Base.metadata.drop_all(engine, tables=tables)
 # Create schemas
 Base.metadata.create_all(engine, tables=tables)
-populate_db(session)
-session.commit()
 session.close()

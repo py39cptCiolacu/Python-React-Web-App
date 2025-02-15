@@ -4,7 +4,6 @@ import threading
 from sqlalchemy.orm import sessionmaker
 
 from back.settings import DEBUG_MODE, DB_PATH
-from back.revision.controller import RevisionController
 from back.order.controller import OrderController
 from back.material.controller import MaterialController 
 from back.aircraft.controller import AircraftController
@@ -16,7 +15,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db = SessionLocal()
 
 controllers = {
-    "revision": RevisionController(db),
     "order": OrderController(db),
     "aircraft": AircraftController(db),
     "material": MaterialController(db)

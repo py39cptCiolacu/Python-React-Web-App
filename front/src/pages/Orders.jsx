@@ -1,37 +1,43 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/TableView.css"
 
-const data = [
-  { name: "Device A", model: "X100", manufacturer: "TechCorp", capacity: "500GB", serialNumber: "SN123456" },
-  { name: "Device B", model: "Y200", manufacturer: "GigaTech", capacity: "1TB", serialNumber: "SN654321" },
-  { name: "Device C", model: "Z300", manufacturer: "NanoInc", capacity: "2TB", serialNumber: "SN789123" },
-  { name: "Device D", model: "W400", manufacturer: "MegaSystems", capacity: "5TB", serialNumber: "SN987654" },
-];
-
 const Orders = () => {
+  const [orders, setOrders] = useState([]); // Inițializare ca array gol
+
+  useEffect(() => {
+    window.pywebview.api
+      .order_get_all_orders()  // Înlocuiește cu apelul corect pentru comenzile tale
+      .then((response) => setOrders(response)) // Salvează datele în orders
+      .catch((error) => console.error("Error fetching orders data:", error));
+  }, []);
+
   return (
     <div className="table-container">
       <h2>ORDERS</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Aircraft Serial Number</th>
-            <th>Material PN</th>
-            <th>Arrival Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>{item.name}</td>
-              <td>{item.model}</td>
-              <td>{item.manufacturer}</td>
-              <td>{item.capacity}</td>
+      {orders.length === 0 ? (
+        <p>No orders data available</p> // Mesaj în caz că orders este gol
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Aircraft Serial Number</th>
+              <th>Material PN</th>
+              <th>Arrival Date</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {orders.map((item, index) => (
+              <tr key={index}>
+                <td>{item.aircraft_serial_number}</td>
+                <td>{item.material_pn}</td>
+                <td>{item.arrival_date}</td>
+                <td>{item.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
