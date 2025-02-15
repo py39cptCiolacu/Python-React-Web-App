@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 import "./App.css";
-import Home from "./pages/Home";
+// import Home from "./pages/Home";
+import FrontTable from "./pages/FrontTable";
 
 function App() {
   const [ready, setReady] = useState(false);
@@ -33,7 +34,8 @@ function App() {
       </div>
     </div>
   ) : (
-    <Home />
+    // <Home/>
+    <FrontTable/>
   );
 }
 
