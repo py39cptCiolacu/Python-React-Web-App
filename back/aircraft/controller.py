@@ -14,12 +14,9 @@ class AircraftController:
         
         return aircrafts
 
-    def add_aircrafts_from_file(self, data: dict):
-        if "file" not in data:
-            return {"success": False, "error": "Missing file!"}
-        
+    def add_aircrafts_from_file(self, file):
         try:
-            repository.create_new_aircrafts(self.db, data["file"])
+            repository.create_new_aircrafts(self.db, file) 
             return {"success": True, "message": "Aircrafts uploaded successfully!"}
         except Exception as e:
             return {"success": False, "error": f"Error during file processing: {str(e)}"}

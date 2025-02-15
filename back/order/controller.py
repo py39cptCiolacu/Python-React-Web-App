@@ -14,12 +14,9 @@ class OrderController:
 
         return orders
 
-    def add_orders_from_file(self, data: dict):
-        if "file" not in data:
-            return {"success": False, "error": "Missing file!"}
-        
+    def add_orders_from_file(self, file):
         try:
-            repository.create_new_orders(self.db, data["file"])
+            repository.create_new_orders(self.db, file)
             return {"success": True}
         except Exception as e:
             return {"success": False, "error": f"An error occured: {e}"}
