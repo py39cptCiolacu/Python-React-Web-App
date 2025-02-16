@@ -4,8 +4,8 @@ const SearchBar = ({ onSearchChange }) => {
   const [aircraftSerialNumber, setAircraftSerialNumber] = React.useState("");
   const [materialPN, setMaterialPN] = React.useState("");
   const [status, setStatus] = React.useState("All");
-  const [startDate, setStartDate] = React.useState(""); // Start date
-  const [endDate, setEndDate] = React.useState(""); // End date
+  const [startDate, setStartDate] = React.useState(""); 
+  const [endDate, setEndDate] = React.useState(""); 
 
   const handleSearchChange = () => {
     onSearchChange(aircraftSerialNumber, materialPN, status, startDate, endDate);

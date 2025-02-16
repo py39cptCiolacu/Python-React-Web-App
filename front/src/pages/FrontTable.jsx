@@ -9,12 +9,10 @@ export default function FrontTable() {
   const [activeTab, setActiveTab] = useState(localStorage.getItem("activeTab") || "orders");
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Salvăm tab-ul activ în localStorage
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
 
-  // Funcție care forțează re-randarea tabelului după upload
   const handleUploadSuccess = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };
