@@ -39,7 +39,7 @@ def create_new_materials(db: Session, file_path: str) -> dict:
     return _commit_valid_materials(valid_new_materials, skipped_materials, db)
 
 def _check_for_valid_materials(materials: pd.DataFrame, db: Session) -> tuple[list, list]:
-    expected_columns = ["name", "type", "pn", "weright"]
+    expected_columns = ["name", "type", "pn", "weight"]
     materials.columns.str.lower()
 
     missing_columns = [col for col in expected_columns if col.lower() not in materials.columns.str.lower()]
