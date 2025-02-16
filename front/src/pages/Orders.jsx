@@ -102,7 +102,7 @@ const Orders = () => {
                 <tr key={index}>
                   <td onClick={() => handleAircraftClick(item)}>{item.aircraft_serial_number}</td>
                   <td onClick={() => handleMaterialClick(item.material_part_number)}>{item.material_part_number}</td>
-                  <td>{item.arrival_date}</td>
+                  <td>{new Date(item.arrival_date).toLocaleDateString('ro-RO')}</td>
                   <td>{item.status}</td>
                 </tr>
               ))}
