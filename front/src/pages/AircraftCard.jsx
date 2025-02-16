@@ -5,12 +5,13 @@ const AircraftCard = ({ aircraft, onClose }) => {
   const [aircraftDetails, setAircraftDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchAircraftInfo = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/get_aircraft_info?serial_number=${aircraft.aircraft_serial_number}`);
+        const response = await fetch(`${API_BASE_URL}/get_aircraft_info?serial_number=${aircraft.aircraft_serial_number}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch aircraft details');

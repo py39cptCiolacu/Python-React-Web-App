@@ -5,13 +5,15 @@ const Materials = () => {
   const [materials, setMaterials] = useState([]); 
   const [currentPage, setCurrentPage] = useState(1); 
   const materialsPerPage = 10; 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    window.pywebview.api
-      .material_get_all_materials() 
-      .then((response) => setMaterials(response)) 
+    fetch(`${API_BASE_URL}/get_all_materials`)
+      .then((response) => response.json())
+      .then((data) => setMaterials(data))
       .catch((error) => console.error("Error fetching materials data:", error));
   }, []);
+  
 
   const indexOfLastMaterial = currentPage * materialsPerPage;
   const indexOfFirstMaterial = indexOfLastMaterial - materialsPerPage;

@@ -11,13 +11,14 @@ const Orders = () => {
   const [selectedAircraft, setSelectedAircraft] = useState(null); 
   const [selectedMaterial, setSelectedMaterial] = useState(null); 
   const ordersPerPage = 10;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    window.pywebview.api
-      .order_get_all_orders()
-      .then((response) => {
-        setOrders(response);
-        setFilteredOrders(response); 
+    fetch(`${API_BASE_URL}/get_all_orders`)
+      .then((response) => response.json())
+      .then((data) => {
+        setOrders(data);
+        setFilteredOrders(data);
       })
       .catch((error) => console.error("Error fetching orders data:", error));
   }, []);

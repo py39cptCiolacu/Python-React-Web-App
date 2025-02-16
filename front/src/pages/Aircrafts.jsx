@@ -5,13 +5,17 @@ const Aircrafts = () => {
   const [aircrafts, setAircrafts] = useState([]); 
   const [currentPage, setCurrentPage] = useState(1); 
   const aircraftsPerPage = 10; 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    window.pywebview.api
-      .aircraft_get_all_aircrafts() 
-      .then((response) => setAircrafts(response)) 
+    fetch(`${API_BASE_URL}/get_all_aircrafts`) 
+      .then((response) => response.json()) 
+      .then((data) => {
+        setAircrafts(data); 
+      })
       .catch((error) => console.error("Error fetching aircraft data:", error));
   }, []);
+  
 
   const indexOfLastAircraft = currentPage * aircraftsPerPage;
   const indexOfFirstAircraft = indexOfLastAircraft - aircraftsPerPage;

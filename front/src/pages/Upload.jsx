@@ -4,7 +4,8 @@ import "../styles/Upload.css";
 export default function Upload({ activeTab, onUploadSuccess }) {
   const [filePath, setFilePath] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -24,7 +25,7 @@ export default function Upload({ activeTab, onUploadSuccess }) {
       const formData = new FormData();
       formData.append("file", filePath);
 
-      let url = `http://localhost:5000/upload/${activeTab}`;
+      let url = `${API_BASE_URL}/upload/${activeTab}`;
       const response = await fetch(url, {
         method: "POST",
         body: formData,
