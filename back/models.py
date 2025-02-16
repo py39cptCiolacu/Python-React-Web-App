@@ -1,6 +1,9 @@
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from back.utils.base import Base
+# from back.utils.base import Base
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class Aircraft(Base):
     __tablename__ = "aircraft"
