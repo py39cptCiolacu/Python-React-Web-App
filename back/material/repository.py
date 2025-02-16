@@ -17,12 +17,36 @@ def get_material_by_part_number(db: Session, part_number: str) -> Material:
 
 def create_new_materials(db: Session, file_path: str) -> dict:
     print(f"Processing file: {file_path}")
+    ACCEPTED_EXTENSIONS = ["xlsx", "xls", "csv"]
+    file_extension = file_path.filename.rsplit('.', 1)[1].lower()
     
+    if file_extension not in ACCEPTED_EXTENSIONS:
+        raise Exception(f"This applications allow only Excel and CSV files!")
+
     try:
-        materials = pd.read_excel(file_path)
+        if file_extension in ["xlsx", "xls"]:
+            materials = pd.read_excel(file_path)
+        elif file_extension == "csv":
+            materials = pd.read_csv(file_path)   
     except Exception as e:
         raise Exception(f"Failed to read file: {str(e)}")
     
+    valid_new_materials, skipped_materials = _check_for_valid_materials(materials, db)
+
+    if not valid_new_materials:
+        raise Exception("No valid materials were provieded in the file!")
+
+    return _commit_valid_materials(valid_new_materials, skipped_materials, db)
+
+def _check_for_valid_materials(materials: pd.DataFrame, db: Session) -> tuple[list, list]:
+    expected_columns = ["name", "type", "pn", "weright"]
+    materials.columns.str.lower()
+
+    missing_columns = [col for col in expected_columns if col.lower() not in materials.columns.str.lower()]
+
+    if missing_columns:
+        raise Exception(f"The files is missing columns: {missing_columns}")
+
     valid_new_materials = []
     skipped_materials = []
 
@@ -39,20 +63,7 @@ def create_new_materials(db: Session, file_path: str) -> dict:
         else:
             skipped_materials.append(f"Material {new_material.part_number} skipped due to validation error!")
 
-    if valid_new_materials:
-        try:
-            db.add_all(valid_new_materials)
-            db.commit()
-            return {"success": True, "message": f"{len(valid_new_materials)} materials added successfully!"}
-        except IntegrityError as e:
-            db.rollback()
-            raise Exception(f"Database integrity error: {str(e)}")
-        except Exception as e:
-            db.rollback()
-            raise Exception(f"Unexpected error during commit: {str(e)}")
-    else:
-        raise Exception(f"No valid materials to add. Skipped: {', '.join(skipped_materials)}")
-
+    return valid_new_materials, skipped_materials
 
 def _verify_material_before_add(db: Session, material: Material) -> bool:
 
@@ -74,3 +85,18 @@ def _verify_material_before_add(db: Session, material: Material) -> bool:
         return False
     
     return True
+
+def _commit_valid_materials(valid_new_materials: list, skipped_materials: list, db: Session):
+    if not valid_new_materials:
+        raise Exception(f"No valid materials to add. Skipped: {', '.join(skipped_materials)}")
+    
+    try:
+        db.add_all(valid_new_materials)
+        db.commit()
+        return {"success": True, "message": f"{len(valid_new_materials)} materials added successfully!"}
+    except IntegrityError as e:
+        db.rollback()
+        raise Exception(f"Database integrity error: {str(e)}")
+    except Exception as e:
+        db.rollback()
+        raise Exception(f"Unexpected error during commit: {str(e)}")

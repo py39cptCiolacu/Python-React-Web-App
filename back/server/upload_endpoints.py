@@ -1,9 +1,10 @@
-from flask import request ,jsonify
-from back.server.server import app
+from flask import request, jsonify, Blueprint
 
 from back.controllers import aircraft_controller, material_controller, order_controller
 
-@app.route("/upload/<tab_name>", methods=['POST'])
+upload_blueprint = Blueprint("upload", __name__)
+
+@upload_blueprint.route("/upload/<tab_name>", methods=['POST'])
 def upload_file(tab_name):
 
     if 'file' not in request.files:

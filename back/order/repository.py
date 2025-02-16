@@ -10,12 +10,36 @@ def get_all_orders(db: Session) -> List[Order]:
 
 def create_new_orders(db: Session, file_path: str):
     print(f"Processing file: {file_path}")
+    ACCEPTED_EXTENSIONS = ["xlsx", "xls", "csv"]
+    file_extension = file_path.filename.rsplit('.', 1)[1].lower()
+
+    if file_extension not in ACCEPTED_EXTENSIONS:
+        raise Exception(f"This applications allow only Excel and CSV files!")
     
     try:
-        orders = pd.read_excel(file_path)
+        if file_extension in ["xlsx", "xls"]:
+            orders = pd.read_excel(file_path)
+        elif file_extension == "csv":
+            orders = pd.read_csv(file_path)   
     except Exception as e:
         raise Exception(f"Failed to read file: {str(e)}")
+
+    valid_orders, skipped_orders = _check_for_valid_orders(orders, db)
+
+    if not valid_orders:
+        raise Exception("No valid orders provieded in the file!")
     
+    return _commit_valid_orders(valid_orders, skipped_orders, db)
+
+def _check_for_valid_orders(orders: pd.DataFrame, db: Session) -> tuple[list, list]:
+    expected_columns = ["aircraft serial number", "material pn", "arrival date", "status"]
+    orders.columns.str.lower()
+    
+    missing_columns = [col for col in expected_columns if col.lower() not in orders.columns.str.lower()]
+
+    if missing_columns:
+        raise Exception(f"The files is missing columns: {missing_columns}")
+
     valid_orders = []
     skipped_orders = []
 
@@ -32,19 +56,7 @@ def create_new_orders(db: Session, file_path: str):
         else:
             skipped_orders.append(f"Order for aircraft {new_order.aircraft_serial_number} with material {new_order.material_part_number} skipped due to validation error!")
 
-    if valid_orders:
-        try:
-            db.add_all(valid_orders)
-            db.commit()
-            return {"success": True, "message": f"{len(valid_orders)} orders added successfully!"}
-        except IntegrityError as e:
-            db.rollback()
-            raise Exception(f"Database integrity error: {str(e)}")
-        except Exception as e:
-            db.rollback()
-            raise Exception(f"Unexpected error during commit: {str(e)}")
-    else:
-        raise Exception(f"No valid orders to add. Skipped: {', '.join(skipped_orders)}")
+    return valid_orders, skipped_orders
 
 def _verify_order_before_add(db: Session, order: Order) -> bool:
 
@@ -80,3 +92,18 @@ def _verify_order_before_add(db: Session, order: Order) -> bool:
         return False
 
     return True
+
+def _commit_valid_orders(valid_orders: list, skipped_orders: list, db: Session):
+    if not valid_orders:
+        raise Exception(f"No valid orders to add. Skipped: {', '.join(skipped_orders)}")
+    
+    try:
+        db.add_all(valid_orders)
+        db.commit()
+        return {"success": True, "message": f"{len(valid_orders)} orders added successfully!"}
+    except IntegrityError as e:
+        db.rollback()
+        raise Exception(f"Database integrity error: {str(e)}")
+    except Exception as e:
+        db.rollback()
+        raise Exception(f"Unexpected error during commit: {str(e)}")

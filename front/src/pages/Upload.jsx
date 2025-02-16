@@ -58,6 +58,7 @@ export default function Upload({ activeTab, onUploadSuccess }) {
         onChange={handleFileChange}
         className="file-input"
         disabled={isUploading}
+        accept=".xlsx, .xls, .csv"
       />
       <button
         className="upload-btn"

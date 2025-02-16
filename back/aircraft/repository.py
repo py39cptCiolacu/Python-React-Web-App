@@ -16,18 +16,41 @@ def get_aircraft_by_serial_number(db: Session, serial_number: str) -> Aircraft:
     else:
         raise NoResultFound
 
-def create_new_aircrafts(db: Session, file_path: str):
+def create_new_aircrafts(db: Session, file_path):
     print(f"Processing file: {file_path}")
+    ACCEPTED_EXTENSIONS = ["xlsx", "xls", "csv"]
+    file_extension = file_path.filename.rsplit('.', 1)[1].lower()
+    
+    if file_extension not in ACCEPTED_EXTENSIONS:
+        raise Exception(f"This applications allow only Excel and CSV files!")
     
     try:
-        aircrafts = pd.read_excel(file_path)
+        if file_extension in ["xlsx", "xls"]:
+            aircrafts = pd.read_excel(file_path)
+        elif file_extension == "csv":
+            aircrafts = pd.read_csv(file_path)   
     except Exception as e:
         raise Exception(f"Failed to read file: {str(e)}")
     
-    valid_new_aircrafts = []
-    skipped_aircrafts = []
+    valid_new_aircrafts, skipped_aircrafts = _check_for_valid_aircrafts(aircrafts, db)
+    if not valid_new_aircrafts:
+        raise Exception("No valid aircrafts were provieded in the file!")
 
-    for index, row in aircrafts.iterrows():
+    return _commit_valid_aircrafts(valid_new_aircrafts, skipped_aircrafts, db)
+
+def _check_for_valid_aircrafts(aircrafts: pd.DataFrame, db: Session) -> tuple[list, list]: 
+    expected_columns = ["serial number", "model", "manufacturer", "configuration"]
+    aircrafts.columns.str.lower()
+    
+    missing_columns = [col for col in expected_columns if col.lower() not in aircrafts.columns.str.lower()]
+
+    if missing_columns:
+        raise Exception(f"The files is missing columns: {missing_columns}")
+
+    skipped_aircrafts = []
+    valid_new_aircrafts = []
+
+    for _, row in aircrafts.iterrows():
         new_aircraft = Aircraft(
             serial_number=row["Serial Number"],
             model=row["Model"],
@@ -40,27 +63,8 @@ def create_new_aircrafts(db: Session, file_path: str):
             valid_new_aircrafts.append(new_aircraft)
         else:
             skipped_aircrafts.append(f"Aircraft {new_aircraft.serial_number} skipped due to validation error!")
-
-    if valid_new_aircrafts:
-        try:
-            db.add_all(valid_new_aircrafts)
-            db.commit()
-            return {"success": True, "message": f"{len(valid_new_aircrafts)} aircrafts added successfully!"}
-        except IntegrityError as e:
-            db.rollback()
-            raise Exception(f"Database integrity error: {str(e)}")
-        except Exception as e:
-            db.rollback()
-            raise Exception(f"Unexpected error during commit: {str(e)}")
-    else:
-        raise Exception(f"No valid aircrafts to add. Skipped: {', '.join(skipped_aircrafts)}")
-
-
-def delete_aircraft():
-    pass
-
-def edit_aircraft():
-    pass
+    
+    return valid_new_aircrafts, skipped_aircrafts
 
 def _verify_aircraft_before_add(db: Session, aircraft: Aircraft) -> bool:
     
@@ -72,7 +76,6 @@ def _verify_aircraft_before_add(db: Session, aircraft: Aircraft) -> bool:
         print("Missing information about aircraft!")
         return False
 
-
     existing_aircraft = db.query(Aircraft).filter(Aircraft.serial_number == aircraft.serial_number).first()
     if existing_aircraft:
         print(f"{aircraft.serial_number} already in the database")
@@ -83,3 +86,19 @@ def _verify_aircraft_before_add(db: Session, aircraft: Aircraft) -> bool:
         return False
 
     return True
+
+def _commit_valid_aircrafts(valid_new_aircrafts: list, skipped_aircrafts: list, db: Session):
+
+    if not valid_new_aircrafts:
+        raise Exception(f"No valid aircrafts to add. Skipped: {', '.join(skipped_aircrafts)}")
+    
+    try:
+        db.add_all(valid_new_aircrafts)
+        db.commit()
+        return {"success": True, "message": f"{len(valid_new_aircrafts)} aircrafts added successfully!"}
+    except IntegrityError as e:
+        db.rollback()
+        raise Exception(f"Database integrity error: {str(e)}")
+    except Exception as e:
+        db.rollback()
+        raise Exception(f"Unexpected error during commit: {str(e)}")
