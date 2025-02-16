@@ -1,27 +1,35 @@
+.title-bar {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px; /* Adăugăm spațiu între titlu și butoane */
+}
+
 .header {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    background-color: #333;
-    padding: 15px;
-  }
-  
-button {
-    background-color: #555;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-  }
-  
-button:hover {
-    background-color: #777;
-  }
-  
-.content {
-    margin-top: 20px;
-    text-align: center;
-  }
-  
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.header button {
+  padding: 12px 24px; /* Mărim butonul */
+  font-size: 16px;
+  color: #fff;
+  background-color: #5c6bc0; /* Culoarea butonului inactiv */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-bottom: 5px; /* Adăugăm un spațiu de 5px jos */
+}
+
+.header button:hover {
+  background-color: #3f51b5;
+  transform: scale(1.05); /* Efect de zoom la hover */
+}
+
+.header button.active {
+  background-color: #4caf50; /* Culoare verde pentru butonul activ */
+}

@@ -56,6 +56,7 @@ const Materials = () => {
             <button
               onClick={() => paginate(currentPage - 1)}
               disabled={currentPage === 1}
+              aria-label="Previous page"
             >
               Previous
             </button>
@@ -63,6 +64,7 @@ const Materials = () => {
             <button
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage === totalPages}
+              aria-label="Next page"
             >
               Next
             </button>

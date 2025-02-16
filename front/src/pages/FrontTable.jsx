@@ -19,11 +19,29 @@ export default function FrontTable() {
 
   return (
     <div>
+      {/* Title Bar */}
+      <div className="title-bar">DATABASE DEMO APP</div>
+
       {/* Header buttons */}
       <div className="header">
-        <button onClick={() => setActiveTab("orders")}>ORDERS</button>
-        <button onClick={() => setActiveTab("materials")}>MATERIALS</button>
-        <button onClick={() => setActiveTab("aircrafts")}>AIRCRAFTS</button>
+        <button
+          onClick={() => setActiveTab("orders")}
+          className={activeTab === "orders" ? "active" : ""}
+        >
+          ORDERS
+        </button>
+        <button
+          onClick={() => setActiveTab("materials")}
+          className={activeTab === "materials" ? "active" : ""}
+        >
+          MATERIALS
+        </button>
+        <button
+          onClick={() => setActiveTab("aircrafts")}
+          className={activeTab === "aircrafts" ? "active" : ""}
+        >
+          AIRCRAFTS
+        </button>
       </div>
 
       {/* Table */}

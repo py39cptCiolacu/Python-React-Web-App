@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/SearchBar.css"
 
 const SearchBar = ({ onSearchChange }) => {
   const [aircraftSerialNumber, setAircraftSerialNumber] = React.useState("");

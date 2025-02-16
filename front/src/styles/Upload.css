@@ -1,15 +1,69 @@
 .upload-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .upload-btn {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: auto;
+}
+
+.upload-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px; /* Spațiu între titlu și input */
+}
+
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  margin-top: 10px; /* Adăugăm un spațiu de 10px față de elementul de deasupra */
+}
+
+.file-input {
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.file-input:disabled {
+  background-color: #e0e0e0;
+}
+
+.file-input:hover {
+  border-color: #5c6bc0;
+}
+
+.upload-btn {
+  padding: 12px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #5c6bc0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.upload-btn:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.upload-btn.uploading {
+  background-color: #f39c12;
+}
+
+.upload-btn:hover {
+  background-color: #3f51b5;
+}
