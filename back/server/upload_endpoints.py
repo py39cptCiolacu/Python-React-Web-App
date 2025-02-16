@@ -1,5 +1,5 @@
 from flask import request, jsonify, Blueprint
-
+import logging
 from back.controllers import aircraft_controller, material_controller, order_controller
 
 upload_blueprint = Blueprint("upload", __name__)
@@ -8,11 +8,13 @@ upload_blueprint = Blueprint("upload", __name__)
 def upload_file(tab_name):
 
     if 'file' not in request.files:
+        logging.error("File missing from upload request!")
         return jsonify({"success": False, "error": "No file part"})
     
     file = request.files["file"]
     
     if file.filename == '':
+        logging.error("Empty file in upload request!")
         return jsonify({"success": False, "error": "No selected file"})
     
     try:

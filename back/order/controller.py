@@ -16,7 +16,6 @@ class OrderController:
 
     def add_orders_from_file(self, file):
         try:
-            repository.create_new_orders(self.db, file)
-            return {"success": True}
+            return repository.create_new_orders(self.db, file)
         except Exception as e:
             return {"success": False, "error": f"An error occured: {e}"}

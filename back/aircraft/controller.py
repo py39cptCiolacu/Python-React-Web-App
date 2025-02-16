@@ -21,8 +21,7 @@ class AircraftController:
 
     def add_aircrafts_from_file(self, file):
         try:
-            repository.create_new_aircrafts(self.db, file) 
-            return {"success": True, "message": "Aircrafts uploaded successfully!"}
+            return repository.create_new_aircrafts(self.db, file) 
         except Exception as e:
             return {"success": False, "error": f"Error during file processing: {str(e)}"}
 

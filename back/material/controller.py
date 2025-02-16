@@ -21,8 +21,7 @@ class MaterialController:
 
     def add_materials_from_file(self, file):
         try:
-            repository.create_new_materials(self.db, file)
-            return {"success": True, "message": "Materials uploaded successfully!"}
+            return repository.create_new_materials(self.db, file)
         except Exception as e:
             return {"success": False, "error": f"Error during file processing: {str(e)}"}
 

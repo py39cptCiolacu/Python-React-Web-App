@@ -35,7 +35,7 @@ export default function Upload({ activeTab, onUploadSuccess }) {
 
       if (result.success) {
         console.log("File uploaded successfully:", result);
-        alert("File uploaded successfully!");
+        alert(`${result.message} Check log file for possible issues!`);
         onUploadSuccess();
       } else {
         // Afișează mesajul exact de eroare din backend

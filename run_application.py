@@ -1,12 +1,24 @@
 import webview
 import threading
+import logging
 
-from back.settings import DEBUG_MODE, DB_PATH
+from back.settings import DEBUG_MODE 
 from back.utils.utils import update_listener
 from back.server.server import app
 from back.controllers import controllers
 
+logging.basicConfig(
+    level=logging.DEBUG, 
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),  
+        logging.FileHandler('app.log', mode='a') 
+    ]
+)
+logging.info("App started")
+
 def run_flask():
+    
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
 
 if __name__ == "__main__":

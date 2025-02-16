@@ -3,6 +3,7 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from back.models import Material
+import logging
 
 def get_all_materials(db: Session) -> List[Material]:
     materials = db.query(Material).all()
@@ -13,7 +14,7 @@ def get_material_by_part_number(db: Session, part_number: str) -> Material:
     if material:
         return material
     else:
-        raise NoResultFound
+        raise NoResultFound(f"Material {part_number} was not found in database!")
 
 def create_new_materials(db: Session, file_path: str) -> dict:
     print(f"Processing file: {file_path}")
@@ -21,6 +22,7 @@ def create_new_materials(db: Session, file_path: str) -> dict:
     file_extension = file_path.filename.rsplit('.', 1)[1].lower()
     
     if file_extension not in ACCEPTED_EXTENSIONS:
+        logging.error("Incorrect type of file uploaded!")
         raise Exception(f"This applications allow only Excel and CSV files!")
 
     try:
@@ -29,6 +31,7 @@ def create_new_materials(db: Session, file_path: str) -> dict:
         elif file_extension == "csv":
             materials = pd.read_csv(file_path)   
     except Exception as e:
+        logging.error("Backend failed to read the file!")
         raise Exception(f"Failed to read file: {str(e)}")
     
     valid_new_materials, skipped_materials = _check_for_valid_materials(materials, db)
@@ -45,6 +48,7 @@ def _check_for_valid_materials(materials: pd.DataFrame, db: Session) -> tuple[li
     missing_columns = [col for col in expected_columns if col.lower() not in materials.columns.str.lower()]
 
     if missing_columns:
+        logging.warning(f"The files is missing columns: {missing_columns}")
         raise Exception(f"The files is missing columns: {missing_columns}")
 
     valid_new_materials = []
@@ -61,6 +65,7 @@ def _check_for_valid_materials(materials: pd.DataFrame, db: Session) -> tuple[li
         if _verify_material_before_add(db, new_material):
             valid_new_materials.append(new_material)
         else:
+            logging.info(f"Material {new_material.part_number} skipped due to validation error!")
             skipped_materials.append(f"Material {new_material.part_number} skipped due to validation error!")
 
     return valid_new_materials, skipped_materials
@@ -68,20 +73,20 @@ def _check_for_valid_materials(materials: pd.DataFrame, db: Session) -> tuple[li
 def _verify_material_before_add(db: Session, material: Material) -> bool:
 
     if not all([material.name, material.part_number, material.type, material.weight]):
-        print("Missing information about material!")
+        logging.warning("Missing information about material!")
         return False
     
     if not all([material.name is not None, material.part_number is not None, material.type is not None, material.weight is not None]):
-        print("Missing information about material!")
+        logging.warning("Missing information about material!")
         return False
 
     existing_material = db.query(Material).filter(Material.part_number == material.part_number).first()
     if existing_material:
-        print(f"{material.part_number} already in the database!")
+        logging.warning(f"{material.part_number} already in the database!")
         return False
     
     if material.weight < 0:
-        print("Weight cannot be less than 0!")
+        logging.warn(f"{material.part_number} Weight cannot be less than 0!")
         return False
     
     return True
