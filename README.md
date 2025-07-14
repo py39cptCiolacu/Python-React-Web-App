@@ -48,21 +48,23 @@ cd Python-React-Web-App
 
 ```bash
 pip install -r requiements.txt
+```
 
 ### 3. Create and populate db
 
 ```back
 python /back/utils/populate_db.py
+```
 
 ### 4. Open frontend
 
 ```bash
 cd /front
 npm run dev
-
+```
 
 ### 5. Start the application
 
 ```bash
 python run_application.py
-
+```
