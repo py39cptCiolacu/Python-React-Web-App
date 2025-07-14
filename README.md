@@ -42,6 +42,7 @@ This is a desktop-style full-stack application built using **Flask**, **React**,
 ```bash
 git clone https://github.com/py39cptCiolacu/tech_exercise.git
 cd Python-React-Web-App
+```
 
 ### 2. Install dependencies
 
