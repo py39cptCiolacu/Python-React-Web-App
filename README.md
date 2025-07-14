@@ -1,80 +1,67 @@
-# Application name
+# ✈️ Aircraft Parts Management – Tech Exercise
 
-Purpose of the application here...
+This is a desktop-style full-stack application built using **Flask**, **React**, and **PyWebView**. The app allows users to upload Excel files containing data on aircrafts, parts, and materials, and then performs automatic correlation and allows modifications through a clean, React-based interface.
 
-## Requirements
+---
 
-- Python >= 3.8.5
-- Node >= 16.19
+## ⚙️ Features
 
-## Backend
+- 📤 Upload Excel files for:
+  - Aircrafts
+  - Parts
+  - Materials
 
-Please, before you start with the process, create your own virtual environment. Remember to activate it every time you are developing the tool
+- 🔗 Automatic linking between aircrafts, parts, and materials
+- ✏️ Modify uploaded data directly from the interface
+- 📊 Display structured views for easier navigation
+- 🖥️ Runs as a native-like desktop application using `pywebview`
+- 🧠 Database interactions via SQLAlchemy
+- 🧬 Alembic-based schema migrations
 
-Create virtual environment:
+---
 
-```bash
-python -m venv <env_name>
-```
+## 🧱 Tech Stack
 
-Activate virtual environment:
+### Backend
+- [Flask](https://flask.palletsprojects.com/)
+- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [Alembic](https://alembic.sqlalchemy.org/)
+- [pandas](https://pandas.pydata.org/) – Excel parsing
+- [pywebview](https://pywebview.flowrl.com/) – Desktop wrapper
 
-```bash
-<env_name>\Scripts\activate
-```
+### Frontend
+- [React](https://reactjs.org/)
+- CSS / Tailwind 
 
-### Install Pyhthondependencies
+---
 
-```bash
-pip install -r back\requirements.txt
-```
+## 🚀 Getting Started
 
-### Environment variables
-
-Create a file called as settings.py manually in the back folder wit this content:
-
-```python
-DB_PATH = r'db\tech_exercise.db'
-DEBUG_MODE = True
-```
-
-### Populate DB
-
-Run the file populate_db.py to create Data Base schemas and add testing entries.
+### 1. Clone the repository
 
 ```bash
-python back\utils\populate_db.py
-```
+git clone https://github.com/py39cptCiolacu/tech_exercise.git
+cd Python-React-Web-App
 
-## Frontend
-
-### Install npm dependencies
+### 2. Install dependencies
 
 ```bash
-cd front\
-npm i
-```
+pip install -r requiements.txt
 
-### Launch frontend server
+### 3. Create and populate db
 
-This commando will release the frontend server on the port 5173 (by default) for development purposes:
+```back
+python /back/utils/populate_db.py
+
+### 4. Open frontend
 
 ```bash
-cd front\
+cd /front
 npm run dev
-```
 
-## Run application
 
-```bash
-python app_front.py
-```
-
-## Run build
-
-Generate the statict HTML files for production
+### 5. Start the application
 
 ```bash
-cd front\
-npm run build
-```
+python run_application.py
+
